@@ -1,0 +1,773 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabCount | Conteo de Personas</title>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: 18px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background:
+                radial-gradient(circle at top left, #e9dffc 0, transparent 30%),
+                radial-gradient(circle at bottom right, #e8ddfa 0, transparent 30%),
+                #f7f3fc;
+            color: #292252;
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .contenedor {
+            width: 100%;
+            min-height: calc(100vh - 36px);
+            min-height: calc(100dvh - 36px);
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid #e5dcf8;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px #a99aca25;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 24px 35px;
+            border-bottom: 2px solid #eee7fa;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .marca h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        .logo-superior {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9681d4;
+        }
+
+        .logo-superior svg {
+            width: 45px;
+            height: 45px;
+            stroke-width: 1.8;
+        }
+
+        .subtitulo {
+            padding-left: 20px;
+            border-left: 2px solid #b8a5e8;
+            font-size: 17px;
+        }
+
+        main {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns:
+                minmax(220px, 0.9fr)
+                minmax(0, 2.4fr)
+                minmax(300px, 1.35fr);
+            gap: 22px;
+            padding: 24px;
+            align-items: stretch;
+        }
+
+        .presentacion {
+            min-width: 0;
+            background: linear-gradient(160deg, #f5f0ff, #eee5fa);
+            border-radius: 25px;
+            padding: 28px 18px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ilustracion {
+            width: 100%;
+            max-width: 260px;
+            margin-bottom: 22px;
+        }
+
+        .ilustracion svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .presentacion h2 {
+            font-size: clamp(30px, 2.6vw, 44px);
+            margin: 5px 0;
+        }
+
+        .presentacion p {
+            font-size: clamp(15px, 1.2vw, 19px);
+            line-height: 1.6;
+        }
+
+        .linea {
+            width: 100px;
+            height: 5px;
+            background: #aa96df;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .monitor {
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .pantalla {
+            flex: 1;
+            min-height: 350px;
+            background: #e8ebf2;
+            border-radius: 23px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .pantalla .icono {
+            color: #8b87a8;
+        }
+
+        .pantalla .icono svg {
+            width: 75px;
+            height: 75px;
+            stroke-width: 1.5;
+        }
+
+        .pantalla p {
+            font-family: Arial, sans-serif;
+            font-size: 17px;
+            color: #66667a;
+        }
+
+        .pantalla img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .botones {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 5px;
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            border: 1px solid transparent;
+            border-radius: 16px;
+            padding: 15px 20px;
+            font-family: Georgia, serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px #29225218;
+        }
+
+        button svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        .iniciar {
+            background: #d9f3e2;
+            border-color: #9cddb0;
+            color: #245e38;
+        }
+
+        .detener {
+            background: #fbe0e9;
+            border-color: #efb3c8;
+            color: #7b284a;
+        }
+
+        .reiniciar {
+            background: #e8dffc;
+            border-color: #c9b7f6;
+            color: #49347c;
+        }
+
+        .tarjetas {
+            min-width: 0;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-rows: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .tarjeta {
+            min-width: 0;
+            border-radius: 24px;
+            padding: 20px 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .tarjeta h3 {
+            font-size: clamp(16px, 1.3vw, 21px);
+            margin: 0;
+        }
+
+        .tarjeta .simbolo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tarjeta .simbolo svg {
+            width: clamp(38px, 3vw, 52px);
+            height: clamp(38px, 3vw, 52px);
+            stroke-width: 1.8;
+        }
+
+        .tarjeta .valor {
+            font-size: clamp(38px, 3.5vw, 58px);
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .personas {
+            background: #eee5fc;
+        }
+
+        .personas .simbolo {
+            color: #9b83d7;
+        }
+
+        .capacidad {
+            background: #fff2df;
+        }
+
+        .capacidad .simbolo {
+            color: #a47b45;
+        }
+
+        .ocupacion {
+            background: #e0f0fc;
+        }
+
+        .ocupacion .simbolo {
+            color: #3185c1;
+        }
+
+        .estado {
+            background: #e2f6e6;
+        }
+
+        .estado .simbolo {
+            color: #24974c;
+        }
+
+        .estado .valor {
+            color: #267b42;
+            font-size: clamp(28px, 2.5vw, 42px);
+        }
+
+        .estado.completo {
+            background: #fbe0e9;
+        }
+
+        .estado.completo .simbolo,
+        .estado.completo .valor {
+            color: #a83258;
+        }
+
+        .estado.completo .valor {
+            font-size: clamp(22px, 1.9vw, 30px);
+        }
+
+        @media (min-width: 1101px) {
+            main {
+                min-height: 600px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            main {
+                grid-template-columns:
+                    minmax(200px, 1fr)
+                    minmax(0, 2fr);
+            }
+
+            .tarjetas {
+                grid-column: 1 / -1;
+                min-height: 300px;
+            }
+
+            .presentacion {
+                min-height: 420px;
+            }
+
+            .pantalla {
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 10px;
+            }
+
+            .contenedor {
+                min-height: calc(100dvh - 20px);
+                border-radius: 22px;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px 15px;
+            }
+
+            .marca h1 {
+                font-size: 30px;
+            }
+
+            .subtitulo {
+                border-left: none;
+                padding-left: 0;
+                font-size: 14px;
+            }
+
+            main {
+                grid-template-columns: 1fr;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .presentacion {
+                min-height: 260px;
+                padding: 20px;
+            }
+
+            .ilustracion {
+                max-width: 150px;
+                margin-bottom: 10px;
+            }
+
+            .presentacion h2 {
+                font-size: 30px;
+            }
+
+            .presentacion p {
+                font-size: 15px;
+            }
+
+            .monitor {
+                gap: 15px;
+            }
+
+            .pantalla {
+                min-height: 260px;
+                height: 300px;
+                flex: none;
+            }
+
+            .botones {
+                gap: 8px;
+            }
+
+            button {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+
+            .tarjetas {
+                grid-column: auto;
+                min-height: 340px;
+                gap: 10px;
+            }
+
+            .tarjeta {
+                padding: 15px 8px;
+                gap: 10px;
+            }
+
+            .tarjeta h3 {
+                font-size: 15px;
+            }
+
+            .tarjeta .valor {
+                font-size: 36px;
+            }
+
+            .estado .valor {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <header>
+        <div class="marca">
+            <div class="logo-superior">
+                <i data-lucide="flask-conical"></i>
+            </div>
+            <h1>LabCount</h1>
+        </div>
+
+        <div class="subtitulo">
+            Sistema de Conteo de Personas para Laboratorio
+        </div>
+    </header>
+
+    <main>
+
+        <section class="presentacion">
+
+            <div class="ilustracion">
+                <svg viewBox="0 0 240 220"
+                     xmlns="http://www.w3.org/2000/svg"
+                     role="img"
+                     aria-label="Ilustración de laboratorio">
+
+                    <circle cx="110" cy="100" r="90"
+                            fill="#e6dcfa"/>
+
+                    <circle cx="45" cy="115" r="35"
+                            fill="#ded1f8"/>
+
+                    <path d="M180 170 Q190 110 183 55"
+                          fill="none"
+                          stroke="#4fae88"
+                          stroke-width="4"/>
+
+                    <path d="M185 120 Q145 95 150 65
+                             Q180 65 185 120"
+                          fill="#8cdec0"/>
+
+                    <path d="M187 100 Q205 65 213 70
+                             Q220 100 187 125"
+                          fill="#75d2ae"/>
+
+                    <path d="M184 145 Q145 125 147 100
+                             Q178 105 184 145"
+                          fill="#9be3c8"/>
+
+                    <path d="M65 42 H105
+                             M75 42 V91
+                             L35 167
+                             Q25 187 47 187
+                             H124
+                             Q146 187 134 167
+                             L95 91
+                             V42"
+                          fill="#d7c9fa"
+                          fill-opacity="0.75"
+                          stroke="#51438c"
+                          stroke-width="5"
+                          stroke-linejoin="round"
+                          stroke-linecap="round"/>
+
+                    <path d="M48 154
+                             Q70 142 88 154
+                             Q108 164 122 153
+                             L135 176
+                             Q137 184 124 184
+                             H47
+                             Q35 184 41 173 Z"
+                          fill="#b5a2f1"
+                          fill-opacity="0.65"/>
+
+                    <path d="M145 86 H172
+                             M150 86 V118
+                             L127 171
+                             Q119 187 137 187
+                             H190
+                             Q207 187 199 171
+                             L168 118
+                             V86"
+                          fill="#e1d6fb"
+                          fill-opacity="0.8"
+                          stroke="#51438c"
+                          stroke-width="5"
+                          stroke-linejoin="round"
+                          stroke-linecap="round"/>
+
+                    <path d="M135 162
+                             Q155 153 171 162
+                             Q185 168 193 160
+                             L200 177
+                             Q202 184 190 184
+                             H137
+                             Q126 184 131 175 Z"
+                          fill="#bdaaf4"/>
+
+                    <circle cx="68" cy="158" r="5"
+                            fill="#ffffff"/>
+
+                    <circle cx="93" cy="170" r="4"
+                            fill="#ffffff"/>
+
+                    <circle cx="157" cy="172" r="4"
+                            fill="#ffffff"/>
+
+                    <circle cx="101" cy="135" r="4"
+                            fill="#ffffff"/>
+
+                    <path d="M20 194 H220"
+                          stroke="#51438c"
+                          stroke-width="4"
+                          stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <h2>LabCount</h2>
+            <p>Sistema de Conteo de Personas</p>
+            <div class="linea"></div>
+
+        </section>
+
+        <section class="monitor">
+
+            <div class="pantalla" id="pantalla">
+                <div class="icono">
+                    <i data-lucide="camera"></i>
+                </div>
+                <p>Cámara en espera</p>
+            </div>
+
+            <div class="botones">
+
+                <button class="iniciar" id="btn-iniciar" type="button">
+                    <i data-lucide="play"></i>
+                    Iniciar Cámara
+                </button>
+
+                <button class="detener" id="btn-detener" type="button">
+                    <i data-lucide="square"></i>
+                    Detener
+                </button>
+
+                <button class="reiniciar" id="btn-reiniciar" type="button">
+                    <i data-lucide="refresh-cw"></i>
+                    Reiniciar
+                </button>
+
+            </div>
+
+        </section>
+
+        <section class="tarjetas">
+
+            <div class="tarjeta personas">
+                <div class="simbolo">
+                    <i data-lucide="users-round"></i>
+                </div>
+                <h3>Personas Detectadas</h3>
+                <div class="valor" id="personas-detectadas">0</div>
+            </div>
+
+            <div class="tarjeta capacidad">
+                <div class="simbolo">
+                    <i data-lucide="layers"></i>
+                </div>
+                <h3>Capacidad Máxima</h3>
+                <div class="valor" id="capacidad-maxima">10</div>
+            </div>
+
+            <div class="tarjeta ocupacion">
+                <div class="simbolo">
+                    <i data-lucide="chart-pie"></i>
+                </div>
+                <h3>Ocupación</h3>
+                <div class="valor" id="porcentaje-ocupacion">0%</div>
+            </div>
+
+            <div class="tarjeta estado" id="tarjeta-estado">
+                <div class="simbolo">
+                    <i data-lucide="circle-check" id="icono-estado"></i>
+                </div>
+                <h3>Estado del Aforo</h3>
+                <div class="valor" id="estado-aforo">Seguro</div>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+    lucide.createIcons();
+
+    const pantalla = document.getElementById("pantalla");
+    const btnIniciar = document.getElementById("btn-iniciar");
+    const btnDetener = document.getElementById("btn-detener");
+    const btnReiniciar = document.getElementById("btn-reiniciar");
+
+    const personasDetectadas = document.getElementById("personas-detectadas");
+    const capacidadMaxima = document.getElementById("capacidad-maxima");
+    const porcentajeOcupacion = document.getElementById("porcentaje-ocupacion");
+    const estadoAforo = document.getElementById("estado-aforo");
+    const tarjetaEstado = document.getElementById("tarjeta-estado");
+
+    const contenidoEspera = pantalla.innerHTML;
+
+    let camaraActiva = false;
+    let intervaloConteo = null;
+
+    function actualizarTarjetas(datos) {
+        personasDetectadas.textContent = datos.personas;
+        capacidadMaxima.textContent = datos.capacidad;
+        porcentajeOcupacion.textContent = datos.ocupacion + "%";
+        estadoAforo.textContent = datos.estado;
+
+        const aforoCompleto = datos.personas >= datos.capacidad;
+
+        tarjetaEstado.classList.toggle("completo", aforoCompleto);
+
+        const iconoEstado = document.querySelector(
+            "#tarjeta-estado .simbolo svg"
+        );
+
+        if (iconoEstado) {
+            iconoEstado.style.color = aforoCompleto
+                ? "#a83258"
+                : "#24974c";
+        }
+    }
+
+    async function actualizarConteo() {
+        if (!camaraActiva) {
+            return;
+        }
+
+        try {
+            const respuesta = await fetch(
+                "{% url 'obtener_conteo' %}",
+                { cache: "no-store" }
+            );
+
+            if (!respuesta.ok) {
+                return;
+            }
+
+            const datos = await respuesta.json();
+
+            if (camaraActiva) {
+                actualizarTarjetas(datos);
+            }
+
+        } catch (error) {
+            return;
+        }
+    }
+
+    function iniciarCamara() {
+        if (camaraActiva) {
+            return;
+        }
+
+        camaraActiva = true;
+
+        const video = document.createElement("img");
+
+        video.id = "video";
+        video.alt = "Cámara del laboratorio";
+        video.src = "{% url 'video_camara' %}";
+
+        video.onerror = detenerCamara;
+
+        pantalla.replaceChildren(video);
+
+        actualizarConteo();
+
+        intervaloConteo = setInterval(actualizarConteo, 1000);
+    }
+
+    function detenerCamara() {
+        camaraActiva = false;
+
+        if (intervaloConteo !== null) {
+            clearInterval(intervaloConteo);
+            intervaloConteo = null;
+        }
+
+        const video = document.getElementById("video");
+
+        if (video) {
+            video.removeAttribute("src");
+            video.remove();
+        }
+
+        pantalla.innerHTML = contenidoEspera;
+
+        actualizarTarjetas({
+            personas: 0,
+            capacidad: 10,
+            ocupacion: 0,
+            estado: "Seguro"
+        });
+    }
+
+    function reiniciarCamara() {
+        detenerCamara();
+        iniciarCamara();
+    }
+
+    btnIniciar.addEventListener("click", iniciarCamara);
+    btnDetener.addEventListener("click", detenerCamara);
+    btnReiniciar.addEventListener("click", reiniciarCamara);
+
+    window.addEventListener("beforeunload", detenerCamara);
+</script>
+
+</body>
+</html>

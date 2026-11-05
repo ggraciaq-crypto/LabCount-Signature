@@ -1,0 +1,1581 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LabCount Signature | Monitoreo Inteligente</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+
+<style>
+
+/* =========================================
+   COLORES GENERALES
+========================================= */
+
+:root {
+    --texto: #281052;
+    --secundario: #45316c;
+    --violeta: #6428c5;
+    --violeta-oscuro: #35106f;
+    --rosa: #a41460;
+    --azul: #0756ad;
+    --verde: #056b38;
+    --borde: rgba(178,167,220,.35);
+    --sombra: 0 12px 34px rgba(69,53,122,.09);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "DM Sans", Arial, sans-serif;
+    color: var(--texto);
+    background: #f4f3fc;
+}
+
+button {
+    font: inherit;
+}
+
+/* =========================================
+   FONDO ORIGINAL SIN DESENFOQUE
+========================================= */
+
+.fondo-laboratorio {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(248,248,255,.73),
+            rgba(242,241,253,.76)
+        ),
+        url("{% static 'detector/fondo_labcount.png' %}");
+
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: none;
+}
+
+.fondo-laboratorio::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,.04),
+        rgba(235,232,252,.10)
+    );
+}
+
+.aplicacion {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================
+   ENCABEZADO
+========================================= */
+
+.encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 19px 38px;
+    background: rgba(255,255,255,.94);
+    border-bottom: 1px solid var(--borde);
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 54px;
+    height: 54px;
+    border-radius: 17px;
+
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #b077f0,
+        #6428c5
+    );
+
+    box-shadow: 0 7px 18px rgba(94,73,170,.20);
+}
+
+.logo svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 2.2;
+}
+
+/* NOMBRE MEJORADO */
+
+.marca h1 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    margin: 0;
+    font-family: "Manrope", sans-serif;
+    font-size: 29px;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+    color: #230957;
+}
+
+.marca h1 span {
+    display: inline-block;
+    padding: 3px 12px 5px;
+    border-radius: 22px;
+
+    background: linear-gradient(
+        135deg,
+        #aa6df0,
+        #7030c9
+    );
+
+    color: #ffffff;
+    font-size: .86em;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.7px;
+}
+
+.marca p {
+    margin: 5px 0 0;
+    color: #35216f;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+.sello {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 15px;
+
+    border: 1px solid #cbb0fa;
+    border-radius: 12px;
+    background: #f2eaff;
+
+    color: #5920b5;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.sello svg {
+    width: 19px;
+    height: 19px;
+    color: #8c36dc;
+    stroke-width: 2.5;
+}
+
+/* =========================================
+   CONTENIDO
+========================================= */
+
+.contenido {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    width: 100%;
+    max-width: 1750px;
+    margin: 0 auto;
+    padding: 30px 38px 34px;
+}
+
+.introduccion {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.categoria {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    color: #5120a9;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.1px;
+}
+
+.categoria svg {
+    width: 19px;
+    height: 19px;
+    color: #6d29d1;
+    stroke-width: 2.6;
+}
+
+.introduccion h2 {
+    margin: 10px 0 8px;
+
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(30px,3vw,42px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.2;
+
+    color: #35106f;
+}
+
+.introduccion p {
+    margin: 0;
+    color: #3e2b68;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.etiqueta-modelo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 15px;
+
+    border: 1px solid #d2b8f6;
+    border-radius: 12px;
+    background: rgba(255,255,255,.95);
+
+    color: #5420aa;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.etiqueta-modelo svg {
+    width: 19px;
+    height: 19px;
+    color: #cb27ad;
+    stroke-width: 2.6;
+}
+
+/* =========================================
+   DISTRIBUCIÓN
+========================================= */
+
+.panel-principal {
+    display: grid;
+    grid-template-columns:
+        minmax(0,1.6fr)
+        minmax(340px,.9fr);
+
+    align-items: start;
+    gap: 22px;
+    flex: 1;
+}
+
+/* =========================================
+   PANEL DE CÁMARA
+========================================= */
+
+.panel-camara {
+    min-width: 0;
+    min-height: 570px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    padding: 22px;
+    border: 1px solid rgba(210,202,239,.85);
+    border-radius: 24px;
+
+    background: rgba(255,255,255,.94);
+    box-shadow: var(--sombra);
+}
+
+.cabecera-camara {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.titulo-camara {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icono-camara {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+
+    background: #e9ddff;
+    color: #6524c4;
+}
+
+.icono-camara svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2.5;
+}
+
+.titulo-camara h3 {
+    margin: 0;
+    font-family: "Manrope", sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    color: #2c0d65;
+}
+
+.titulo-camara p {
+    margin: 4px 0 0;
+    color: #473174;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* INDICADOR */
+
+.indicador-camara {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 14px;
+
+    border-radius: 12px;
+    background: #eae4f7;
+    color: #38206e;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.punto {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #5b4695;
+}
+
+.indicador-camara.activo {
+    background: #d9f4e5;
+    color: #086b38;
+}
+
+.indicador-camara.activo .punto {
+    background: #1a9956;
+}
+
+/* =========================================
+   PANTALLA
+========================================= */
+
+.pantalla {
+    position: relative;
+    flex: 1;
+    min-height: 365px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    overflow: hidden;
+    border: 1px solid #c9b5f8;
+    border-radius: 20px;
+
+    background:
+        radial-gradient(
+            ellipse at 25% 25%,
+            rgba(255,255,255,.9),
+            transparent 55%
+        ),
+        linear-gradient(
+            135deg,
+            #efedff,
+            #f2f5ff 55%,
+            #ebf0ff
+        );
+}
+
+.pantalla::before {
+    content: "";
+    position: absolute;
+    left: -10%;
+    bottom: -38%;
+    width: 120%;
+    height: 75%;
+
+    border-radius: 50%;
+    background: rgba(183,177,238,.13);
+    transform: rotate(-9deg);
+    pointer-events: none;
+}
+
+.pantalla::after {
+    content: "";
+    position: absolute;
+    right: -20%;
+    bottom: -48%;
+    width: 85%;
+    height: 90%;
+
+    border-radius: 50%;
+    background: rgba(178,204,245,.15);
+    pointer-events: none;
+}
+
+.icono-espera {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 94px;
+    height: 94px;
+    border-radius: 25px;
+
+    background: rgba(255,255,255,.93);
+    border: 1px solid #cbb5f5;
+    color: #6428c5;
+
+    box-shadow: 0 9px 25px rgba(83,66,154,.08);
+}
+
+.icono-espera svg {
+    width: 43px;
+    height: 43px;
+    stroke-width: 2;
+}
+
+.pantalla h4 {
+    position: relative;
+    z-index: 1;
+
+    margin: 5px 0 0;
+    font-size: 23px;
+    font-weight: 800;
+    color: #48208e;
+}
+
+.pantalla p {
+    position: relative;
+    z-index: 1;
+
+    margin: 0;
+    padding: 0 16px;
+
+    color: #42306c;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.pantalla img {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    background: #181629;
+}
+
+/* =========================================
+   BOTONES
+========================================= */
+
+.pie-camara {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+.controles {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 12px 18px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .1px;
+
+    cursor: pointer;
+    transition: transform .2s,background .2s;
+}
+
+.boton:hover {
+    transform: translateY(-2px);
+}
+
+.boton:focus-visible {
+    outline: 3px solid #b7a6e8;
+    outline-offset: 3px;
+}
+
+.boton svg {
+    width: 19px;
+    height: 19px;
+    stroke-width: 2.5;
+}
+
+/* INICIAR */
+
+.boton-iniciar {
+    background: linear-gradient(
+        135deg,
+        #a16af0,
+        #7131c8
+    );
+
+    border-color: #8546d5;
+    color: white;
+
+    box-shadow: 0 5px 14px rgba(102,46,184,.20);
+}
+
+.boton-iniciar:hover {
+    background: #6226b5;
+}
+
+/* DETENER */
+
+.boton-detener {
+    background: #f9dcef;
+    border-color: #eeb3d5;
+    color: #981454;
+}
+
+.boton-detener:hover {
+    background: #f5c9e3;
+}
+
+/* REINICIAR */
+
+.boton-reiniciar {
+    background: #e2d7ff;
+    border-color: #c3a9f4;
+    color: #5424ac;
+}
+
+.boton-reiniciar:hover {
+    background: #d4c2fa;
+}
+
+.nota-camara {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #453079;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.nota-camara svg {
+    width: 18px;
+    height: 18px;
+    color: #6932c0;
+    stroke-width: 2.5;
+}
+
+/* =========================================
+   ESTADÍSTICAS
+========================================= */
+
+.panel-estadisticas {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    gap: 16px;
+}
+
+.titulo-estadisticas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 19px 20px;
+    border: 1px solid var(--borde);
+    border-radius: 18px;
+
+    background: rgba(255,255,255,.94);
+    box-shadow: var(--sombra);
+}
+
+.titulo-estadisticas h3 {
+    margin: 0;
+    font-family: "Manrope", sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    color: #29105e;
+}
+
+.titulo-estadisticas p {
+    margin: 5px 0 0;
+    color: #473174;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.titulo-estadisticas > svg {
+    width: 26px;
+    height: 26px;
+    color: #7431cb;
+    stroke-width: 2.5;
+}
+
+/* =========================================
+   TARJETAS
+========================================= */
+
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-auto-rows: 165px;
+    align-content: start;
+    align-items: start;
+    gap: 14px;
+}
+
+.tarjeta {
+    min-width: 0;
+    height: 165px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 9px;
+
+    padding: 17px 15px;
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 20px;
+
+    box-shadow: 0 9px 24px rgba(64,52,115,.08);
+    transition: transform .2s;
+}
+
+.tarjeta:hover {
+    transform: translateY(-3px);
+}
+
+.tarjeta-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.tarjeta-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: rgba(255,255,255,.82);
+}
+
+.tarjeta-icono svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2.5;
+}
+
+.numero-tarjeta {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.tarjeta h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.tarjeta .valor {
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(32px,3vw,44px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    overflow-wrap: anywhere;
+}
+
+/* PERSONAS */
+
+.personas {
+    background: linear-gradient(
+        135deg,
+        #e9e4fa,
+        #f4f1ff
+    );
+    color: #5420bd;
+}
+
+.personas h4,
+.personas .valor,
+.personas .numero-tarjeta,
+.personas .tarjeta-icono {
+    color: #5420bd;
+}
+
+/* CAPACIDAD */
+
+.capacidad {
+    background: linear-gradient(
+        135deg,
+        #f8e8ef,
+        #fff2f6
+    );
+    color: #a41460;
+}
+
+.capacidad h4,
+.capacidad .valor,
+.capacidad .numero-tarjeta,
+.capacidad .tarjeta-icono {
+    color: #a41460;
+}
+
+/* OCUPACIÓN */
+
+.ocupacion {
+    background: linear-gradient(
+        135deg,
+        #e1eefb,
+        #f0f7ff
+    );
+    color: #0756ad;
+}
+
+.ocupacion h4,
+.ocupacion .valor,
+.ocupacion .numero-tarjeta,
+.ocupacion .tarjeta-icono {
+    color: #0756ad;
+}
+
+/* ESTADO */
+
+.estado {
+    background: linear-gradient(
+        135deg,
+        #dff1e8,
+        #eef9f3
+    );
+    color: #056b38;
+}
+
+.estado h4,
+.estado .valor,
+.estado .numero-tarjeta,
+.estado .tarjeta-icono {
+    color: #056b38;
+}
+
+.estado .valor {
+    font-size: clamp(25px,2.3vw,35px);
+}
+
+/* ALERTA */
+
+.estado.completo {
+    background: linear-gradient(
+        135deg,
+        #f9e2e9,
+        #fff0f3
+    );
+    color: #a21d49;
+}
+
+.estado.completo h4,
+.estado.completo .valor,
+.estado.completo .numero-tarjeta,
+.estado.completo .tarjeta-icono {
+    color: #a21d49;
+}
+
+.estado.completo .valor {
+    font-size: clamp(19px,1.8vw,27px);
+}
+
+/* =========================================
+   NOTA
+========================================= */
+
+.nota-estadisticas {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+
+    padding: 16px;
+    border: 1px solid #e3dcf4;
+    border-radius: 15px;
+
+    background: rgba(248,247,255,.94);
+    color: #44316f;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.nota-estadisticas svg {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+    color: #6828c4;
+    stroke-width: 2.5;
+}
+
+/* =========================================
+   PIE DE PÁGINA
+========================================= */
+
+.pie-pagina {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    padding: 0 4px;
+    color: #39236e;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tecnologias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tecnologias span {
+    padding: 8px 12px;
+    border: 1px solid #ddd5f2;
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.94);
+    color: #4d239a;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width:1100px) {
+
+    .panel-principal {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-camara {
+        min-height: 520px;
+    }
+
+    .tarjetas {
+        grid-template-columns: repeat(4,minmax(0,1fr));
+        grid-auto-rows: 155px;
+    }
+
+    .tarjeta {
+        height: 155px;
+    }
+}
+
+@media (max-width:750px) {
+
+    .tarjetas {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+}
+
+@media (max-width:650px) {
+
+    .encabezado {
+        padding: 17px;
+    }
+
+    .logo {
+        width: 47px;
+        height: 47px;
+    }
+
+    .marca h1 {
+        font-size: 22px;
+    }
+
+    .marca p {
+        font-size: 9px;
+    }
+
+    .sello {
+        display: none;
+    }
+
+    .contenido {
+        padding: 20px 13px;
+        gap: 18px;
+    }
+
+    .introduccion h2 {
+        font-size: 28px;
+    }
+
+    .panel-camara {
+        min-height: 470px;
+        padding: 15px;
+    }
+
+    .pantalla {
+        min-height: 280px;
+    }
+
+    .pie-camara,
+    .controles {
+        justify-content: center;
+    }
+
+    .boton {
+        padding: 11px 12px;
+        font-size: 12px;
+    }
+
+    .tarjetas {
+        gap: 10px;
+        grid-auto-rows: 150px;
+    }
+
+    .tarjeta {
+        height: 150px;
+        padding: 14px 12px;
+    }
+
+    .tarjeta h4 {
+        font-size: 12px;
+    }
+
+    .tarjeta .valor {
+        font-size: 30px;
+    }
+
+    .estado .valor {
+        font-size: 24px;
+    }
+
+    .estado.completo .valor {
+        font-size: 19px;
+    }
+}
+
+@media (prefers-reduced-motion:reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="fondo-laboratorio" aria-hidden="true"></div>
+
+<div class="aplicacion">
+
+    <!-- ENCABEZADO -->
+
+    <header class="encabezado">
+
+        <div class="marca">
+
+            <div class="logo">
+                <i data-lucide="flask-conical"></i>
+            </div>
+
+            <div>
+                <h1>
+                    LabCount
+                    <span>Signature</span>
+                </h1>
+
+                <p>SISTEMA INTELIGENTE DE MONITOREO</p>
+            </div>
+
+        </div>
+
+        <div class="sello">
+            <i data-lucide="sparkles"></i>
+            Inteligencia artificial · YOLOv8
+        </div>
+
+    </header>
+
+    <!-- CONTENIDO -->
+
+    <main class="contenido">
+
+        <section class="introduccion">
+
+            <div>
+
+                <div class="categoria">
+                    <i data-lucide="layout-dashboard"></i>
+                    PANEL DE MONITOREO
+                </div>
+
+                <h2>
+                    Monitoreo inteligente del laboratorio
+                </h2>
+
+                <p>
+                    Conteo de personas y supervisión del aforo
+                    en tiempo real.
+                </p>
+
+            </div>
+
+            <div class="etiqueta-modelo">
+                <i data-lucide="scan-eye"></i>
+                Detección automática de personas
+            </div>
+
+        </section>
+
+        <div class="panel-principal">
+
+            <!-- PANEL DE CÁMARA -->
+
+            <section class="panel-camara">
+
+                <div class="cabecera-camara">
+
+                    <div class="titulo-camara">
+
+                        <div class="icono-camara">
+                            <i data-lucide="video"></i>
+                        </div>
+
+                        <div>
+                            <h3>Visualización en tiempo real</h3>
+                            <p>Cámara del laboratorio</p>
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="indicador-camara"
+                        id="indicador-camara"
+                    >
+                        <span class="punto"></span>
+                        <span id="texto-indicador">EN ESPERA</span>
+                    </div>
+
+                </div>
+
+                <!-- PANTALLA -->
+
+                <div class="pantalla" id="pantalla">
+
+                    <div class="icono-espera">
+                        <i data-lucide="camera"></i>
+                    </div>
+
+                    <h4>Cámara en espera</h4>
+
+                    <p>
+                        Presiona «Iniciar cámara» para comenzar
+                        el monitoreo.
+                    </p>
+
+                </div>
+
+                <!-- BOTONES -->
+
+                <div class="pie-camara">
+
+                    <div class="controles">
+
+                        <button
+                            class="boton boton-iniciar"
+                            id="btn-iniciar"
+                            type="button"
+                        >
+                            <i data-lucide="play"></i>
+                            Iniciar cámara
+                        </button>
+
+                        <button
+                            class="boton boton-detener"
+                            id="btn-detener"
+                            type="button"
+                        >
+                            <i data-lucide="square"></i>
+                            Detener
+                        </button>
+
+                        <button
+                            class="boton boton-reiniciar"
+                            id="btn-reiniciar"
+                            type="button"
+                        >
+                            <i data-lucide="refresh-cw"></i>
+                            Reiniciar
+                        </button>
+
+                    </div>
+
+                    <div class="nota-camara">
+                        <i data-lucide="scan-line"></i>
+                        Detección mediante YOLOv8
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- PANEL DE ESTADÍSTICAS -->
+
+            <aside class="panel-estadisticas">
+
+                <div class="titulo-estadisticas">
+
+                    <div>
+                        <h3>Resumen de ocupación</h3>
+                        <p>Indicadores actuales del laboratorio</p>
+                    </div>
+
+                    <i data-lucide="chart-no-axes-combined"></i>
+
+                </div>
+
+                <!-- TARJETAS -->
+
+                <div class="tarjetas">
+
+                    <!-- PERSONAS -->
+
+                    <div class="tarjeta personas">
+
+                        <div class="tarjeta-superior">
+
+                            <div class="tarjeta-icono">
+                                <i data-lucide="users-round"></i>
+                            </div>
+
+                            <span class="numero-tarjeta">01</span>
+
+                        </div>
+
+                        <h4>Personas detectadas</h4>
+
+                        <div
+                            class="valor"
+                            id="personas-detectadas"
+                        >0</div>
+
+                    </div>
+
+                    <!-- CAPACIDAD -->
+
+                    <div class="tarjeta capacidad">
+
+                        <div class="tarjeta-superior">
+
+                            <div class="tarjeta-icono">
+                                <i data-lucide="users"></i>
+                            </div>
+
+                            <span class="numero-tarjeta">02</span>
+
+                        </div>
+
+                        <h4>Capacidad máxima</h4>
+
+                        <div
+                            class="valor"
+                            id="capacidad-maxima"
+                        >10</div>
+
+                    </div>
+
+                    <!-- OCUPACIÓN -->
+
+                    <div class="tarjeta ocupacion">
+
+                        <div class="tarjeta-superior">
+
+                            <div class="tarjeta-icono">
+                                <i data-lucide="chart-pie"></i>
+                            </div>
+
+                            <span class="numero-tarjeta">03</span>
+
+                        </div>
+
+                        <h4>Ocupación actual</h4>
+
+                        <div
+                            class="valor"
+                            id="porcentaje-ocupacion"
+                        >0%</div>
+
+                    </div>
+
+                    <!-- ESTADO -->
+
+                    <div
+                        class="tarjeta estado"
+                        id="tarjeta-estado"
+                    >
+
+                        <div class="tarjeta-superior">
+
+                            <div class="tarjeta-icono">
+                                <i data-lucide="shield-check"></i>
+                            </div>
+
+                            <span class="numero-tarjeta">04</span>
+
+                        </div>
+
+                        <h4>Estado del aforo</h4>
+
+                        <div
+                            class="valor"
+                            id="estado-aforo"
+                        >Seguro</div>
+
+                    </div>
+
+                </div>
+
+                <!-- NOTA -->
+
+                <div class="nota-estadisticas">
+
+                    <i data-lucide="info"></i>
+
+                    <span>
+                        El conteo representa las personas
+                        visibles actualmente en la cámara.
+                    </span>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+        <!-- PIE DE PÁGINA -->
+
+        <footer class="pie-pagina">
+
+            <span>
+                <strong>LabCount Signature</strong> ·
+                Sistema de Conteo de Personas
+            </span>
+
+            <div class="tecnologias">
+                <span>Django</span>
+                <span>OpenCV</span>
+                <span>YOLOv8</span>
+                <span>PostgreSQL</span>
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<!-- =========================================
+     FUNCIONALIDAD DE CÁMARA Y CONTEO
+========================================= -->
+
+<script>
+
+if (typeof lucide !== "undefined") {
+    lucide.createIcons();
+}
+
+const pantalla =
+    document.getElementById("pantalla");
+
+const btnIniciar =
+    document.getElementById("btn-iniciar");
+
+const btnDetener =
+    document.getElementById("btn-detener");
+
+const btnReiniciar =
+    document.getElementById("btn-reiniciar");
+
+const personasDetectadas =
+    document.getElementById("personas-detectadas");
+
+const capacidadMaxima =
+    document.getElementById("capacidad-maxima");
+
+const porcentajeOcupacion =
+    document.getElementById("porcentaje-ocupacion");
+
+const estadoAforo =
+    document.getElementById("estado-aforo");
+
+const tarjetaEstado =
+    document.getElementById("tarjeta-estado");
+
+const indicadorCamara =
+    document.getElementById("indicador-camara");
+
+const textoIndicador =
+    document.getElementById("texto-indicador");
+
+const contenidoEspera = pantalla.innerHTML;
+
+let camaraActiva = false;
+let intervaloConteo = null;
+let sesionCamara = 0;
+
+/* ACTUALIZAR TARJETAS */
+
+function actualizarTarjetas(datos) {
+
+    personasDetectadas.textContent =
+        datos.personas;
+
+    capacidadMaxima.textContent =
+        datos.capacidad;
+
+    porcentajeOcupacion.textContent =
+        datos.ocupacion + "%";
+
+    estadoAforo.textContent =
+        datos.estado;
+
+    const aforoCompleto =
+        Number(datos.personas) >= Number(datos.capacidad);
+
+    tarjetaEstado.classList.toggle(
+        "completo",
+        aforoCompleto
+    );
+}
+
+/* CONSULTAR CONTEO */
+
+async function actualizarConteo() {
+
+    if (!camaraActiva) return;
+
+    const sesionActual = sesionCamara;
+
+    try {
+
+        const respuesta = await fetch(
+            "{% url 'obtener_conteo' %}",
+            { cache: "no-store" }
+        );
+
+        if (!respuesta.ok) return;
+
+        const datos = await respuesta.json();
+
+        if (
+            camaraActiva &&
+            sesionActual === sesionCamara
+        ) {
+            actualizarTarjetas(datos);
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al actualizar el conteo:",
+            error
+        );
+    }
+}
+
+/* INICIAR CÁMARA */
+
+function iniciarCamara() {
+
+    if (camaraActiva) return;
+
+    camaraActiva = true;
+    sesionCamara++;
+
+    const sesionActual = sesionCamara;
+
+    const video = document.createElement("img");
+
+    video.id = "video";
+    video.alt = "Cámara del laboratorio";
+
+    video.onerror = function() {
+
+        if (
+            camaraActiva &&
+            sesionActual === sesionCamara
+        ) {
+            detenerCamara();
+        }
+    };
+
+    pantalla.replaceChildren(video);
+
+    video.src = "{% url 'video_camara' %}";
+
+    indicadorCamara.classList.add("activo");
+    textoIndicador.textContent = "ACTIVA";
+
+    actualizarConteo();
+
+    intervaloConteo = setInterval(
+        actualizarConteo,
+        1000
+    );
+}
+
+/* DETENER CÁMARA */
+
+function detenerCamara() {
+
+    camaraActiva = false;
+    sesionCamara++;
+
+    if (intervaloConteo !== null) {
+        clearInterval(intervaloConteo);
+        intervaloConteo = null;
+    }
+
+    const video =
+        document.getElementById("video");
+
+    if (video) {
+        video.onerror = null;
+        video.removeAttribute("src");
+        video.remove();
+    }
+
+    pantalla.innerHTML = contenidoEspera;
+
+    if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+    }
+
+    indicadorCamara.classList.remove("activo");
+    textoIndicador.textContent = "EN ESPERA";
+
+    actualizarTarjetas({
+        personas: 0,
+        capacidad: 10,
+        ocupacion: 0,
+        estado: "Seguro"
+    });
+}
+
+/* REINICIAR */
+
+function reiniciarCamara() {
+    detenerCamara();
+    iniciarCamara();
+}
+
+/* BOTONES */
+
+btnIniciar.addEventListener(
+    "click",
+    iniciarCamara
+);
+
+btnDetener.addEventListener(
+    "click",
+    detenerCamara
+);
+
+btnReiniciar.addEventListener(
+    "click",
+    reiniciarCamara
+);
+
+window.addEventListener(
+    "beforeunload",
+    detenerCamara
+);
+
+</script>
+
+</body>
+</html>
