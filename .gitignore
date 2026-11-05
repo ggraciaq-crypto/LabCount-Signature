@@ -1,0 +1,35 @@
+﻿# Entornos virtuales
+/venv/
+/.venv/
+/env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Variables privadas
+.env
+.env.*
+!.env.example
+
+# Bases de datos y registros
+db.sqlite3
+*.log
+
+# Archivos temporales
+.pytest_cache/
+.vscode/
+
+# Archivos generados
+/staticfiles/
+/media/
+
+# Modelos y claves privadas
+*.pt
+*.pem
+*.key
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
