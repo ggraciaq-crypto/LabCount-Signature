@@ -1362,7 +1362,6 @@ button {
      FUNCIONALIDAD DE CÁMARA Y CONTEO
 ========================================= -->
 
-
 <script>
 
 if (typeof lucide !== "undefined") {
@@ -1405,42 +1404,10 @@ const textoIndicador =
 const contenidoEspera = pantalla.innerHTML;
 
 let camaraActiva = false;
-let flujoCamara = null;
-let intervaloAnalisis = null;
-let analisisEnCurso = false;
+let intervaloConteo = null;
 let sesionCamara = 0;
 
-let videoCamara = null;
-let imagenResultado = null;
-
-const lienzo = document.createElement("canvas");
-const contexto = lienzo.getContext("2d");
-
-
-// ========================================
-// OBTENER TOKEN CSRF DE DJANGO
-// ========================================
-
-function obtenerCookie(nombre) {
-    const cookies = document.cookie.split(";");
-
-    for (const cookie of cookies) {
-        const parte = cookie.trim();
-
-        if (parte.startsWith(nombre + "=")) {
-            return decodeURIComponent(
-                parte.substring(nombre.length + 1)
-            );
-        }
-    }
-
-    return null;
-}
-
-
-// ========================================
-// ACTUALIZAR ESTADÍSTICAS
-// ========================================
+/* ACTUALIZAR TARJETAS */
 
 function actualizarTarjetas(datos) {
 
@@ -1456,298 +1423,111 @@ function actualizarTarjetas(datos) {
     estadoAforo.textContent =
         datos.estado;
 
-    const completo =
-        Number(datos.personas) >=
-        Number(datos.capacidad);
+    const aforoCompleto =
+        Number(datos.personas) >= Number(datos.capacidad);
 
     tarjetaEstado.classList.toggle(
         "completo",
-        completo
+        aforoCompleto
     );
 }
 
+/* CONSULTAR CONTEO */
 
-// ========================================
-// ANALIZAR IMAGEN CON YOLOV8
-// ========================================
+async function actualizarConteo() {
 
-async function analizarFotograma() {
-
-    if (
-        !camaraActiva ||
-        analisisEnCurso ||
-        !videoCamara ||
-        videoCamara.readyState < 2
-    ) {
-        return;
-    }
+    if (!camaraActiva) return;
 
     const sesionActual = sesionCamara;
 
-    analisisEnCurso = true;
-
     try {
 
-        const anchoOriginal = videoCamara.videoWidth;
-        const altoOriginal = videoCamara.videoHeight;
-
-        if (!anchoOriginal || !altoOriginal) {
-            return;
-        }
-
-        // Reducir resolución para evitar
-        // sobrecargar el servidor Render.
-        const anchoMaximo = 640;
-
-        const escala = Math.min(
-            1,
-            anchoMaximo / anchoOriginal
-        );
-
-        lienzo.width = Math.round(
-            anchoOriginal * escala
-        );
-
-        lienzo.height = Math.round(
-            altoOriginal * escala
-        );
-
-        contexto.drawImage(
-            videoCamara,
-            0,
-            0,
-            lienzo.width,
-            lienzo.height
-        );
-
-        const archivo = await new Promise(
-            resolver => {
-                lienzo.toBlob(
-                    resolver,
-                    "image/jpeg",
-                    0.65
-                );
-            }
-        );
-
-        if (!archivo) return;
-
-        const formulario = new FormData();
-
-        formulario.append(
-            "imagen",
-            archivo,
-            "fotograma.jpg"
-        );
-
         const respuesta = await fetch(
-            "{% url 'analizar_imagen' %}",
-            {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken":
-                        obtenerCookie("csrftoken")
-                },
-                body: formulario
-            }
+            "{% url 'obtener_conteo' %}",
+            { cache: "no-store" }
         );
 
-        if (!respuesta.ok) {
-            throw new Error(
-                "Error del servidor: " +
-                respuesta.status
-            );
-        }
+        if (!respuesta.ok) return;
 
         const datos = await respuesta.json();
 
         if (
-            !camaraActiva ||
-            sesionActual !== sesionCamara
+            camaraActiva &&
+            sesionActual === sesionCamara
         ) {
-            return;
-        }
-
-        actualizarTarjetas(datos);
-
-        if (datos.imagen && imagenResultado) {
-            imagenResultado.src = datos.imagen;
+            actualizarTarjetas(datos);
         }
 
     } catch (error) {
 
         console.error(
-            "Error al analizar el fotograma:",
+            "Error al actualizar el conteo:",
             error
         );
-
-    } finally {
-
-        analisisEnCurso = false;
-
     }
 }
 
+/* INICIAR CÁMARA */
 
-// ========================================
-// INICIAR CÁMARA DEL NAVEGADOR
-// ========================================
-
-async function iniciarCamara() {
+function iniciarCamara() {
 
     if (camaraActiva) return;
 
-    const sesionActual = ++sesionCamara;
+    camaraActiva = true;
+    sesionCamara++;
 
-    textoIndicador.textContent =
-        "CONECTANDO...";
+    const sesionActual = sesionCamara;
 
-    try {
+    const video = document.createElement("img");
+
+    video.id = "video";
+    video.alt = "Cámara del laboratorio";
+
+    video.onerror = function() {
 
         if (
-            !navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia
+            camaraActiva &&
+            sesionActual === sesionCamara
         ) {
-            throw new Error(
-                "El navegador no permite acceder " +
-                "a la cámara."
-            );
+            detenerCamara();
         }
+    };
 
-        const flujo =
-            await navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: { ideal: 640 },
-                    height: { ideal: 480 },
-                    facingMode: "user"
-                },
-                audio: false
-            });
+    pantalla.replaceChildren(video);
 
-        if (sesionActual !== sesionCamara) {
-            flujo.getTracks().forEach(
-                pista => pista.stop()
-            );
-            return;
-        }
+    video.src = "{% url 'video_camara' %}";
 
-        flujoCamara = flujo;
+    indicadorCamara.classList.add("activo");
+    textoIndicador.textContent = "ACTIVA";
 
-        videoCamara =
-            document.createElement("video");
+    actualizarConteo();
 
-        videoCamara.id = "video";
-        videoCamara.autoplay = true;
-        videoCamara.muted = true;
-        videoCamara.playsInline = true;
-
-        videoCamara.style.position = "absolute";
-        videoCamara.style.inset = "0";
-        videoCamara.style.width = "100%";
-        videoCamara.style.height = "100%";
-        videoCamara.style.objectFit = "contain";
-        videoCamara.style.background = "#181629";
-        videoCamara.style.zIndex = "2";
-
-        imagenResultado =
-            document.createElement("img");
-
-        imagenResultado.alt =
-            "Detección de personas con YOLOv8";
-
-        imagenResultado.style.position =
-            "absolute";
-
-        imagenResultado.style.inset = "0";
-        imagenResultado.style.width = "100%";
-        imagenResultado.style.height = "100%";
-        imagenResultado.style.objectFit = "contain";
-        imagenResultado.style.zIndex = "3";
-        imagenResultado.style.pointerEvents = "none";
-
-        // Primero se muestra el video real.
-        pantalla.replaceChildren(
-            videoCamara,
-            imagenResultado
-        );
-
-        videoCamara.srcObject = flujo;
-
-        await videoCamara.play();
-
-        if (sesionActual !== sesionCamara) {
-            return;
-        }
-
-        camaraActiva = true;
-
-        indicadorCamara.classList.add(
-            "activo"
-        );
-
-        textoIndicador.textContent = "ACTIVA";
-
-        // Analizar un fotograma cada 2 segundos.
-        // La cámara se mantiene visible.
-        intervaloAnalisis = setInterval(
-            analizarFotograma,
-            2000
-        );
-
-        analizarFotograma();
-
-    } catch (error) {
-
-        console.error(
-            "No se pudo iniciar la cámara:",
-            error
-        );
-
-        detenerCamara();
-
-        textoIndicador.textContent =
-            "ERROR DE CÁMARA";
-
-        alert(
-            "No se pudo abrir la cámara. " +
-            "Verifica que Chrome tenga permiso " +
-            "para utilizarla.\n\n" +
-            error.message
-        );
-
-    }
+    intervaloConteo = setInterval(
+        actualizarConteo,
+        1000
+    );
 }
 
-
-// ========================================
-// DETENER CÁMARA
-// ========================================
+/* DETENER CÁMARA */
 
 function detenerCamara() {
 
     camaraActiva = false;
     sesionCamara++;
 
-    if (intervaloAnalisis !== null) {
-        clearInterval(intervaloAnalisis);
-        intervaloAnalisis = null;
+    if (intervaloConteo !== null) {
+        clearInterval(intervaloConteo);
+        intervaloConteo = null;
     }
 
-    if (flujoCamara) {
+    const video =
+        document.getElementById("video");
 
-        flujoCamara.getTracks().forEach(
-            pista => pista.stop()
-        );
-
-        flujoCamara = null;
+    if (video) {
+        video.onerror = null;
+        video.removeAttribute("src");
+        video.remove();
     }
-
-    if (videoCamara) {
-        videoCamara.srcObject = null;
-        videoCamara = null;
-    }
-
-    imagenResultado = null;
 
     pantalla.innerHTML = contenidoEspera;
 
@@ -1755,12 +1535,8 @@ function detenerCamara() {
         lucide.createIcons();
     }
 
-    indicadorCamara.classList.remove(
-        "activo"
-    );
-
-    textoIndicador.textContent =
-        "EN ESPERA";
+    indicadorCamara.classList.remove("activo");
+    textoIndicador.textContent = "EN ESPERA";
 
     actualizarTarjetas({
         personas: 0,
@@ -1770,22 +1546,14 @@ function detenerCamara() {
     });
 }
 
-
-// ========================================
-// REINICIAR CÁMARA
-// ========================================
+/* REINICIAR */
 
 function reiniciarCamara() {
-
     detenerCamara();
-
     iniciarCamara();
 }
 
-
-// ========================================
-// EVENTOS DE BOTONES
-// ========================================
+/* BOTONES */
 
 btnIniciar.addEventListener(
     "click",
@@ -1808,7 +1576,6 @@ window.addEventListener(
 );
 
 </script>
-
 
 </body>
 </html>
